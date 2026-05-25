@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM Letícia — Topcon Suite</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  /* Paleta HubSpot-style */
+  --nav-bg:#2D3E50;
+  --nav-bg-hover:#3D5066;
+  --nav-text:#CBD6E2;
+  --nav-text-active:#FFFFFF;
+  --orange:#FF7A59;
+  --orange-hover:#FF5C35;
+  --link:#0091AE;
+  --link-hover:#005E7A;
+  --primary:#33475B;
+  --text:#33475B;
+  --muted:#7C98B6;
+  --border:#CBD6E2;
+  --border-light:#DFE3EB;
+  --bg:#F5F8FA;
+  --card:#FFFFFF;
+  --hover-bg:#F5F8FA;
+
+  /* Cores por módulo (barra superior do card) */
+  --mod-topconfleet:#00BDA5;
+  --mod-topconbatch:#7C3AED;
+  --mod-topcon:#1F3A68;
+  --mod-zendesk:#03363D;
+  --mod-administrativo:#F5A623;
+  --mod-assistente:#FF7A59;
+  --mod-vendas:#00A4BD;
+
+  /* Status / prioridade */
+  --green:#00BDA5; --green-bg:#E5F5F2;
+  --yellow:#F5A623; --yellow-bg:#FFF4DD;
+  --red:#FB4D5C; --red-bg:#FFE0E2;
+  --blue:#0091AE; --blue-bg:#DEF1F6;
+  --purple:#7C3AED; --purple-bg:#EDE9FE;
+  --gray:#7C98B6; --gray-bg:#EAF0F6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:'Lexend Deca','Segoe UI',-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ============ TOP NAV ============ */
+.topnav{background:var(--nav-bg);color:var(--nav-text);display:flex;align-items:center;height:54px;padding:0 24px;gap:14px;position:sticky;top:0;z-index:30}
+.topnav .logo{width:32px;height:32px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
+.topnav .module-switch{display:flex;align-items:center;gap:6px;color:var(--nav-text);font-weight:600;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:13px}
+.topnav .module-switch:hover{background:var(--nav-bg-hover)}
+.topnav .module-switch .chev{font-size:9px;opacity:.7}
+.topnav nav{display:flex;align-items:center;gap:2px;margin-left:6px}
+.topnav nav a{color:var(--nav-text);text-decoration:none;padding:6px 12px;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer}
+.topnav nav a:hover{background:var(--nav-bg-hover);color:var(--nav-text-active)}
+.topnav nav a.active{background:#1B2A38;color:var(--nav-text-active);font-weight:600}
+.topnav .spacer{flex:1}
+.topnav .search-top{background:#1F2D3A;border:none;border-radius:5px;padding:7px 12px;color:#fff;font-size:13px;width:240px;outline:none}
+.topnav .search-top::placeholder{color:#7C98B6}
+.topnav .user-area{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 8px;border-radius:5px}
+.topnav .user-area:hover{background:var(--nav-bg-hover)}
+.topnav .avatar-top{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#FF7A59,#F5A623);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+.topnav .user-meta{display:flex;flex-direction:column;line-height:1.2}
+.topnav .user-meta .em{font-size:12px;color:var(--nav-text-active)}
+.topnav .user-meta .id{font-size:10.5px;color:var(--nav-text)}
+
+/* ============ PAGE HEADER ============ */
+.page{padding:24px 28px}
+.page-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.page-title{font-size:30px;font-weight:300;color:var(--primary);margin:0;letter-spacing:-.5px}
+.page-tools{display:flex;align-items:center;gap:10px}
+.toggle-view{display:inline-flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;background:#fff}
+.toggle-view button{background:transparent;border:none;padding:7px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit}
+.toggle-view button.active{background:var(--bg);color:var(--primary)}
+.search-deals{position:relative}
+.search-deals input{border:1px solid var(--border);border-radius:5px;padding:8px 36px 8px 12px;font-size:13px;width:280px;outline:none;background:#fff;font-family:inherit;color:var(--text)}
+.search-deals input:focus{border-color:var(--link)}
+.search-deals .ic{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.btn{cursor:pointer;border-radius:5px;font-size:13px;font-weight:600;padding:8px 16px;border:1px solid transparent;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-outline-orange{background:#fff;color:var(--orange);border-color:var(--orange)}
+.btn-outline-orange:hover{background:#FFF1ED}
+.btn-orange{background:var(--orange);color:#fff;border-color:var(--orange)}
+.btn-orange:hover{background:var(--orange-hover);border-color:var(--orange-hover)}
+.btn-ghost{background:transparent;color:var(--link);border-color:transparent}
+.btn-ghost:hover{background:var(--hover-bg)}
+
+.page-divider{border:none;border-top:1px solid var(--border-light);margin:0 0 22px}
+
+/* ============ LAYOUT ============ */
+.layout{display:grid;grid-template-columns:240px 1fr;gap:22px}
+
+/* ============ SIDEBAR ============ */
+.sidebar{}
+.sidebar .label{font-size:12px;font-weight:600;color:var(--primary);margin:0 0 6px;letter-spacing:.2px}
+.sidebar .label .right{float:right;color:var(--muted);font-weight:500}
+.sidebar .select{position:relative;margin-bottom:18px}
+.sidebar select{appearance:none;width:100%;border:1px solid var(--border);background:#fff;padding:9px 32px 9px 12px;border-radius:5px;font-size:13px;color:var(--text);outline:none;font-family:inherit;cursor:pointer}
+.sidebar select:focus{border-color:var(--link)}
+.sidebar .select::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--link);font-size:11px;pointer-events:none}
+.sidebar .count{font-size:13px;color:var(--muted);margin:14px 0 8px}
+.sidebar .add-filter{background:#EAF0F6;border:1px solid #CBD6E2;padding:8px 14px;border-radius:5px;font-size:13px;font-weight:600;color:var(--primary);cursor:pointer;font-family:inherit;width:auto;transition:all .15s}
+.sidebar .add-filter:hover{background:#DFE6EE}
+
+/* Active filter chips */
+.chips{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:4px 10px;font-size:12px;color:var(--text);width:fit-content}
+.chip .x{cursor:pointer;color:var(--muted);font-weight:700}
+.chip .x:hover{color:var(--red)}
+
+/* ============ KANBAN ============ */
+.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.column{background:transparent;min-width:280px;max-width:280px;flex:0 0 280px;display:flex;flex-direction:column}
+.column-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;border-bottom:2px solid var(--border-light);margin-bottom:10px}
+.column-header .name{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.column-header .count{font-size:13px;font-weight:600;color:var(--primary);background:#fff;border:1px solid var(--border-light);border-radius:14px;padding:1px 10px;min-width:28px;text-align:center}
+.column-body{display:flex;flex-direction:column;gap:8px;min-height:120px;padding:2px}
+.column-body.drag-over{background:#EAF0F6;border-radius:6px}
+.column-footer{padding:10px 4px;font-size:12px;color:var(--muted);text-align:center;border-top:1px solid var(--border-light);margin-top:10px}
+.column-footer strong{color:var(--primary);font-weight:700}
+
+/* ============ CARDS ============ */
+.card{background:#fff;border:1px solid var(--border-light);border-radius:6px;padding:14px;cursor:grab;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.03);transition:box-shadow .15s,transform .1s}
+.card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);border-color:var(--border)}
+.card.dragging{opacity:.4;cursor:grabbing}
+.card .bar{position:absolute;top:0;left:14px;right:14px;height:3px;border-radius:0 0 3px 3px;background:var(--mod-topcon)}
+.card[data-mod="TopconFleet"] .bar{background:var(--mod-topconfleet)}
+.card[data-mod="TopconBatch"] .bar{background:var(--mod-topconbatch)}
+.card[data-mod="Topcon"] .bar{background:var(--mod-topcon)}
+.card[data-mod="Zendesk"] .bar{background:var(--mod-zendesk)}
+.card[data-mod="Administrativo"] .bar{background:var(--mod-administrativo)}
+.card[data-mod="Assistente Comercial"] .bar{background:var(--mod-assistente)}
+.card[data-mod="Vendas"] .bar{background:var(--mod-vendas)}
+.card .module-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-bottom:8px;color:#fff}
+.card[data-mod="TopconFleet"] .module-tag{background:var(--mod-topconfleet)}
+.card[data-mod="TopconBatch"] .module-tag{background:var(--mod-topconbatch)}
+.card[data-mod="Topcon"] .module-tag{background:var(--mod-topcon)}
+.card[data-mod="Zendesk"] .module-tag{background:var(--mod-zendesk)}
+.card[data-mod="Administrativo"] .module-tag{background:var(--mod-administrativo)}
+.card[data-mod="Assistente Comercial"] .module-tag{background:var(--mod-assistente)}
+.card[data-mod="Vendas"] .module-tag{background:var(--mod-vendas)}
+.card .title{color:var(--link);font-size:14px;font-weight:600;line-height:1.35;margin:0 0 8px;cursor:pointer}
+.card .title:hover{text-decoration:underline}
+.card .close-date{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.card .close-date b{color:var(--text);font-weight:600}
+.card .close-date.late{color:var(--red);font-weight:600}
+.card .close-date.near{color:var(--yellow);font-weight:600}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.card .avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:#7C98B6}
+.card .priority-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.card .priority-dot.alta{background:var(--red)}
+.card .priority-dot.media{background:var(--yellow)}
+.card .priority-dot.baixa{background:var(--green)}
+.card .priority-text{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.card .priority-text.alta{color:var(--red)}
+.card .priority-text.media{color:var(--yellow)}
+.card .priority-text.baixa{color:var(--green)}
+.card .card-actions{position:absolute;top:8px;right:8px;display:none;gap:2px}
+.card:hover .card-actions{display:flex}
+.icon-btn{background:#fff;border:1px solid var(--border-light);border-radius:4px;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:12px}
+.icon-btn:hover{color:var(--primary);border-color:var(--border)}
+.icon-btn.danger:hover{color:var(--red);border-color:var(--red)}
+
+/* ============ KPIs (compact, top right) ============ */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
+.kpi{background:#fff;border:1px solid var(--border-light);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary)}
+.kpi .v{font-size:24px;font-weight:700;color:var(--primary);line-height:1}
+.kpi .l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-top:6px}
+.kpi.open::before{background:var(--blue)} .kpi.open .v{color:var(--blue)}
+.kpi.progress::before{background:var(--yellow)} .kpi.progress .v{color:var(--yellow)}
+.kpi.done::before{background:var(--green)} .kpi.done .v{color:var(--green)}
+.kpi.late::before{background:var(--red)} .kpi.late .v{color:var(--red)}
+
+/* ============ TABLE VIEW ============ */
+.table-wrap{background:#fff;border:1px solid var(--border-light);border-radius:6px;overflow:hidden}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:#F5F8FA;text-align:left;padding:11px 14px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border-light);cursor:pointer;user-select:none;white-space:nowrap}
+.tbl th:hover{color:var(--link)}
+.tbl td{padding:13px 14px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.tbl tbody tr:hover{background:var(--hover-bg)}
+.tbl .pill{display:inline-block;padding:3px 9px;border-radius:11px;font-size:11px;font-weight:600}
+.pill-mod{color:#fff}
+.pill-mod[data-mod="TopconFleet"]{background:var(--mod-topconfleet)}
+.pill-mod[data-mod="TopconBatch"]{background:var(--mod-topconbatch)}
+.pill-mod[data-mod="Topcon"]{background:var(--mod-topcon)}
+.pill-mod[data-mod="Zendesk"]{background:var(--mod-zendesk)}
+.pill-mod[data-mod="Administrativo"]{background:var(--mod-administrativo)}
+.pill-mod[data-mod="Assistente Comercial"]{background:var(--mod-assistente)}
+.pill-mod[data-mod="Vendas"]{background:var(--mod-vendas)}
+.pill-status.aberto{background:var(--blue-bg);color:var(--blue)}
+.pill-status.andamento{background:var(--yellow-bg);color:var(--yellow)}
+.pill-status.aguardando{background:var(--purple-bg);color:var(--purple)}
+.pill-status.concluido{background:var(--green-bg);color:var(--green)}
+.pill-status.cancelado{background:var(--gray-bg);color:var(--gray)}
+.pill-prio.alta{background:var(--red-bg);color:var(--red)}
+.pill-prio.media{background:var(--yellow-bg);color:var(--yellow)}
+.pill-prio.baixa{background:var(--green-bg);color:var(--green)}
+
+/* ============ MODAL ============ */
+.modal-bg{position:fixed;inset:0;background:rgba(45,62,80,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:6px;max-width:600px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:16px 22px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{margin:0;color:var(--primary);font-size:17px;font-weight:600}
+.close-x{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-body{padding:20px 22px;display:grid;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:var(--primary);font-weight:600}
+.field input,.field select,.field textarea{border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-size:13px;font-family:inherit;outline:none;color:var(--text);background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--link)}
+.field textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:8px}
+
+/* ============ CHARTS PANEL ============ */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.panel{background:#fff;border:1px solid var(--border-light);border-radius:6px;padding:16px}
+.panel h3{margin:0 0 12px;color:var(--primary);font-size:14px;font-weight:600}
+.chart-wrap{position:relative;height:240px}
+
+.hidden{display:none !important}
+
+/* responsividade */
+@media (max-width: 1200px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+  .layout{grid-template-columns:1fr}
+  .topnav .search-top{width:140px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<div class="topnav">
+  <div class="logo">L</div>
+  <div class="module-switch" id="moduleSwitch">
+    <span id="moduleSwitchLabel">Todos os Módulos</span>
+    <span class="chev">▼</span>
+  </div>
+  <nav>
+    <a class="active">Dashboard</a>
+    <a id="goBoard">Pipeline</a>
+    <a id="goTable">Tabela</a>
+    <a id="goClients">Clientes</a>
+    <a id="goCharts">Relatórios</a>
+  </nav>
+  <div class="spacer"></div>
+  <input type="text" class="search-top" id="searchTop" placeholder="Buscar tarefa, cliente...">
+  <div class="user-area">
+    <div class="avatar-top">LT</div>
+    <div class="user-meta">
+      <span class="em">ltorres@topconsuite.com</span>
+      <span class="id">Letícia · CRM</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE ============ -->
+<div class="page">
+
+  <div class="page-header">
+    <h1 class="page-title">Tarefas</h1>
+    <div class="page-tools">
+      <div class="toggle-view">
+        <button id="vTable">Tabela</button>
+        <button id="vPipeline" class="active">Pipeline</button>
+      </div>
+      <div class="search-deals">
+        <input type="text" id="searchMain" placeholder="Buscar tarefas">
+        <span class="ic">🔎</span>
+      </div>
+      <button class="btn btn-outline-orange" id="btnExport">Ações ▾</button>
+      <button class="btn btn-orange" id="btnNew">Criar tarefa</button>
+    </div>
+  </div>
+  <hr class="page-divider">
+
+  <!-- KPIs compactos -->
+  <div class="kpis">
+    <div class="kpi"><div class="v" id="kpiTotal">0</div><div class="l">Total de Tarefas</div></div>
+    <div class="kpi open"><div class="v" id="kpiOpen">0</div><div class="l">Abertas</div></div>
+    <div class="kpi progress"><div class="v" id="kpiProgress">0</div><div class="l">Em Andamento</div></div>
+    <div class="kpi done"><div class="v" id="kpiDone">0</div><div class="l">Concluídas</div></div>
+    <div class="kpi late"><div class="v" id="kpiLate">0</div><div class="l">Atrasadas</div></div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="label">Módulo</div>
+      <div class="select">
+        <select id="fMod">
+          <option value="">Todos os Módulos</option>
+          <option>TopconFleet</option>
+          <option>TopconBatch</option>
+          <option>Topcon</option>
+          <option>Zendesk</option>
+          <option>Administrativo</option>
+          <option>Assistente Comercial</option>
+          <option>Vendas</option>
+        </select>
+      </div>
+
+      <div class="label">Visualização <span class="right">Padrão</span></div>
+      <div class="select">
+        <select id="fView">
+          <option value="all">Todas as Tarefas</option>
+          <option value="open">Minhas Abertas</option>
+          <option value="late">Atrasadas</option>
+          <option value="today">Vencem Hoje</option>
+          <option value="week">Próximos 7 dias</option>
+        </select>
+      </div>
+
+      <div class="count" id="filterCount">0 tarefas</div>
+
+      <div class="label">Filtros adicionais</div>
+      <div class="select">
+        <select id="fPrio">
+          <option value="">Todas as prioridades</option>
+          <option>Alta</option><option>Média</option><option>Baixa</option>
+        </select>
+      </div>
+      <div class="select">
+        <select id="fResp">
+          <option value="">Todos os responsáveis</option>
+          <option>Letícia</option>
+          <option>Equipe Admin</option>
+          <option>Equipe Vendas</option>
+          <option>Equipe Suporte</option>
+          <option>Assistente Comercial</option>
+        </select>
+      </div>
+
+      <button class="add-filter" id="fClear">Limpar Filtros</button>
+
+      <div id="chips" class="chips"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+      <!-- Pipeline (Kanban) -->
+      <section id="pipelineView">
+        <div class="board" id="board">
+          <!-- columns rendered by JS -->
+        </div>
+      </section>
+
+      <!-- Table -->
+      <section id="tableView" class="hidden">
+        <div class="table-wrap">
+          <table class="tbl" id="tbl">
+            <thead>
+              <tr>
+                <th data-key="categoria">Módulo</th>
+                <th data-key="tarefa">Tarefa</th>
+                <th data-key="cliente">Cliente</th>
+                <th data-key="responsavel">Responsável</th>
+                <th data-key="prazo">Prazo</th>
+                <th data-key="status">Status</th>
+                <th data-key="prioridade">Prioridade</th>
+                <th style="text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section id="chartsView" class="hidden">
+        <div class="charts-row">
+          <div class="panel">
+            <h3>Tarefas por Módulo</h3>
+            <div class="chart-wrap"><canvas id="chartMod"></canvas></div>
+          </div>
+          <div class="panel">
+            <h3>Distribuição por Status</h3>
+            <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Tarefas por Responsável</h3>
+          <div class="chart-wrap" style="height:300px"><canvas id="chartResp"></canvas></div>
+        </div>
+      </section>
+
+      <!-- Clientes -->
+      <section id="clientsView" class="hidden">
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Empresa</th><th>Contato</th><th>E-mail</th><th>Telefone</th><th>Módulo Principal</th><th>Observações</th>
+              </tr>
+            </thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Nova Tarefa</h3>
+      <button class="close-x" id="closeModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Tarefa *</label>
+        <input type="text" id="iTarefa" placeholder="Ex: Follow-up proposta comercial">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Módulo *</label>
+          <select id="iModulo"></select>
+        </div>
+        <div class="field">
+          <label>Prioridade</label>
+          <select id="iPrioridade"></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Cliente / Contato</label>
+          <input type="text" id="iCliente" placeholder="Nome ou empresa">
+        </div>
+        <div class="field">
+          <label>Responsável</label>
+          <select id="iResponsavel"></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Prazo</label>
+          <input type="date" id="iPrazo">
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="iStatus"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Observações / Próximos passos</label>
+        <textarea id="iObs" placeholder="Detalhes, contatos, próxima ação..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelModal">Cancelar</button>
+      <button class="btn btn-orange" id="saveModal">Salvar tarefa</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== Constantes ====== */
+const KEY='crm_leticia_v2';
+const MODULOS=["TopconFleet","TopconBatch","Topcon","Zendesk","Administrativo","Assistente Comercial","Vendas"];
+const STATUS=["Aberto","Em Andamento","Aguardando","Concluído"];
+const STATUS_ALL=["Aberto","Em Andamento","Aguardando","Concluído","Cancelado"];
+const PRIORIDADES=["Alta","Média","Baixa"];
+const RESPONSAVEIS=["Letícia","Equipe Admin","Equipe Vendas","Equipe Suporte","Assistente Comercial"];
+const STATUS_KEY={"Aberto":"aberto","Em Andamento":"andamento","Aguardando":"aguardando","Concluído":"concluido","Cancelado":"cancelado"};
+const PRIO_KEY={"Alta":"alta","Média":"media","Baixa":"baixa"};
+
+const AVATAR_COLORS=["#FF7A59","#00BDA5","#7C3AED","#0091AE","#F5A623","#FB4D5C","#33475B"];
+
+function todayISO(off=0){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().slice(0,10);}
+function fmtBR(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return `${d}/${m}/${y.slice(2)}`;}
+function fmtBRFull(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return `${d}/${m}/${y}`;}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function daysUntil(iso){if(!iso)return null;const t=new Date(iso+'T00:00:00');const today=new Date();today.setHours(0,0,0,0);return Math.round((t-today)/86400000);}
+function initials(name){if(!name)return'?';return name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase();}
+function colorFor(name){let h=0;for(let i=0;i<(name||'').length;i++)h=(h*31+name.charCodeAt(i))>>>0;return AVATAR_COLORS[h%AVATAR_COLORS.length];}
+function escapeHtml(s){return(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ====== Seed data ====== */
+const SEED=[
+  {id:uid(),categoria:"TopconFleet",tarefa:"Configurar telemetria nova frota - Cliente ABC",cliente:"João Almeida — Construtora ABC",responsavel:"Equipe Suporte",criada:todayISO(-2),prazo:todayISO(1),status:"Em Andamento",prioridade:"Alta",obs:"Aguardando envio dos seriais dos rastreadores."},
+  {id:uid(),categoria:"TopconBatch",tarefa:"Implantação módulo de batelada - Cliente XPTO",cliente:"Maria Souza — Empresa XPTO",responsavel:"Letícia",criada:todayISO(-1),prazo:todayISO(2),status:"Aberto",prioridade:"Alta",obs:"Agendar treinamento da equipe operacional."},
+  {id:uid(),categoria:"Topcon",tarefa:"Atualização licença software MAGNET",cliente:"Carla Mendes — Construtora MN",responsavel:"Equipe Suporte",criada:todayISO(0),prazo:todayISO(3),status:"Aberto",prioridade:"Média",obs:"Verificar quantidade de licenças contratadas."},
+  {id:uid(),categoria:"Zendesk",tarefa:"Responder ticket #4521 - integração API",cliente:"Maria Souza — Empresa XPTO",responsavel:"Equipe Suporte",criada:todayISO(-1),prazo:todayISO(0),status:"Aberto",prioridade:"Alta",obs:"Validar credenciais com o time técnico."},
+  {id:uid(),categoria:"Administrativo",tarefa:"Enviar nota fiscal mês 05/2026",cliente:"Cliente interno",responsavel:"Equipe Admin",criada:todayISO(0),prazo:todayISO(3),status:"Aberto",prioridade:"Média",obs:"Conferir CNPJ antes de emitir."},
+  {id:uid(),categoria:"Assistente Comercial",tarefa:"Análise pedido de cancelamento contrato #889",cliente:"Pedro Lima — Construtora YZ",responsavel:"Assistente Comercial",criada:todayISO(-3),prazo:todayISO(-1),status:"Aberto",prioridade:"Alta",obs:"ATRASADO — cliente pediu retorno urgente."},
+  {id:uid(),categoria:"Vendas",tarefa:"Follow-up proposta comercial Topcon Suite",cliente:"João Almeida — Construtora ABC",responsavel:"Letícia",criada:todayISO(-2),prazo:todayISO(1),status:"Em Andamento",prioridade:"Alta",obs:"Enviar planilha de preços atualizada."},
+  {id:uid(),categoria:"Vendas",tarefa:"Demonstração software MAGNET Field",cliente:"Carla Mendes — Construtora MN",responsavel:"Letícia",criada:todayISO(-1),prazo:todayISO(2),status:"Aberto",prioridade:"Alta",obs:"Preparar ambiente de demo e enviar convite."},
+  {id:uid(),categoria:"TopconFleet",tarefa:"Renovação contrato anual rastreamento",cliente:"Pedro Lima — Construtora YZ",responsavel:"Assistente Comercial",criada:todayISO(-4),prazo:todayISO(7),status:"Em Andamento",prioridade:"Média",obs:"Aguardando aprovação financeira do cliente."},
+  {id:uid(),categoria:"Zendesk",tarefa:"Atualizar artigo da base de conhecimento",cliente:"—",responsavel:"Equipe Suporte",criada:todayISO(-5),prazo:todayISO(10),status:"Aguardando",prioridade:"Baixa",obs:"Revisar prints da seção de licenciamento."},
+  {id:uid(),categoria:"Administrativo",tarefa:"Conferir boletos vencidos do mês",cliente:"Cliente interno",responsavel:"Equipe Admin",criada:todayISO(-2),prazo:todayISO(5),status:"Aguardando",prioridade:"Baixa",obs:"Aguardando relatório do ERP."},
+  {id:uid(),categoria:"TopconBatch",tarefa:"Treinamento operadores - Cliente DEF",cliente:"Roberta Lima — DEF Mineração",responsavel:"Equipe Suporte",criada:todayISO(-10),prazo:todayISO(-3),status:"Concluído",prioridade:"Média",obs:"Treinamento realizado com sucesso."},
+];
+const SEED_CLIENTS=[
+  {empresa:"Construtora ABC",contato:"João Almeida",email:"joao@construtoraabc.com.br",tel:"(11) 99988-7766",mod:"Vendas",obs:"Cliente em prospecç
