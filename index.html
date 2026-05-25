@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM Letícia — Cockpit Comercial</title>
+<style>
+:root{ color-scheme: light; }
+*{box-sizing:border-box}
+body{margin:0;font-family:'Lexend Deca','Segoe UI',-apple-system,Arial,sans-serif;background:linear-gradient(135deg,#F5F8FA 0%,#DEEBF7 100%);color:#33475B;min-height:100vh}
+.wrap{max-width:880px;margin:0 auto;padding:48px 24px}
+header{text-align:center;margin-bottom:40px}
+header .logo{width:56px;height:56px;background:#FF7A59;color:#fff;font-size:24px;font-weight:800;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 4px 20px rgba(255,122,89,.3)}
+header h1{margin:0 0 8px;font-size:32px;font-weight:300;color:#1F3A68;letter-spacing:-.5px}
+header p{margin:0;color:#7C98B6;font-size:15px}
+header .sub{color:#33475B;font-size:13px;margin-top:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:32px}
+.card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);text-decoration:none;color:inherit;display:flex;flex-direction:column;border-top:4px solid var(--c);transition:all .2s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.card .ico{font-size:32px;margin-bottom:10px}
+.card h2{margin:0 0 6px;font-size:17px;font-weight:600;color:#33475B}
+.card p{margin:0 0 14px;color:#7C98B6;font-size:13px;line-height:1.5;flex:1}
+.card .cta{font-size:13px;font-weight:600;color:var(--c);display:inline-flex;align-items:center;gap:4px}
+.card.dash{--c:#0091AE}
+.card.live{--c:#FF7A59}
+.card.xlsx{--c:#00BDA5}
+.card .badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fff;padding:3px 9px;border-radius:10px}
+.card.dash .badge{background:#0091AE}
+.card.live .badge{background:#FF7A59}
+.card.xlsx .badge{background:#00BDA5}
+.foot{text-align:center;color:#7C98B6;font-size:12px;line-height:1.6;border-top:1px solid #DFE3EB;padding-top:24px;margin-top:8px}
+.foot a{color:#0091AE;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.info{background:rgba(255,255,255,.7);border:1px solid #CDE9EF;border-radius:8px;padding:14px 18px;color:#1F3864;font-size:13px;line-height:1.5;margin-bottom:24px}
+.info b{color:#FF5C35}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">L</div>
+    <h1>CRM Letícia — Cockpit Comercial</h1>
+    <p>Executiva de Contas Jr II · Topcon Suite</p>
+    <div class="sub">Regiões: Centro-Oeste · Norte · Nordeste · São Paulo · Espírito Santo</div>
+  </header>
+
+  <div class="info">
+    💡 <b>Três interfaces complementares</b> para o mesmo CRM. A versão standalone funciona em qualquer navegador.
+    A versão ao vivo só funciona no Cowork (depende dos conectores Salesforce e Zendesk autenticados).
+    A planilha Excel é para uso offline ou integração com outras ferramentas.
+  </div>
+
+  <div class="cards">
+
+    <a class="card dash" href="CRM_Dashboard.html">
+      <span class="badge">Recomendado</span>
+      <div class="ico">📊</div>
+      <h2>Dashboard Standalone</h2>
+      <p>Interface estilo HubSpot com Kanban, filtros e gráficos. Funciona em qualquer navegador, salva tarefas no localStorage.</p>
+      <span class="cta">Abrir dashboard →</span>
+    </a>
+
+    <a class="card live" href="CRM_Live_Dashboard.html">
+      <span class="badge">Live (Cowork)</span>
+      <div class="ico">⚡</div>
+      <h2>Dashboard Live</h2>
+      <p>Versão completa com 10 abas: Cockpit, Salesforce, Zendesk, Inbox Unificada, Churn, Hunting List, Funil & Receita YTD e Analytics. Requer Cowork.</p>
+      <span class="cta">Abrir live →</span>
+    </a>
+
+    <a class="card xlsx" href="CRM_Leticia.xlsx" download>
+      <div class="ico">📑</div>
+      <h2>Planilha Excel</h2>
+      <p>5 abas (Dashboard, Tarefas, Clientes, Histórico, Configurações) com fórmulas dinâmicas, validações e formatação condicional.</p>
+      <span class="cta">Baixar .xlsx ↓</span>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    Repositório no GitHub: <a href="https://github.com/ltorrestopcon/crm-leticia" target="_blank">ltorrestopcon/crm-leticia</a><br>
+    Construído com Claude (Anthropic) em Cowork mode · Base de análise: desde 01/01/2026
+  </div>
+
+</div>
+</body>
+</html>
