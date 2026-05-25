@@ -340,6 +340,20 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca','Segoe UI',-apple-system,
 </div>
 
 <script>
+
+/* ================= SNAPSHOT LOADER (modo estático) ================= */
+let SNAPSHOT = null;
+async function loadSnapshot(){
+  if(window.cowork && window.cowork.callMcpTool) return null;
+  try{
+    const r = await fetch('snapshot.json');
+    if(!r.ok) throw new Error('snapshot.json não encontrado');
+    SNAPSHOT = await r.json();
+    console.log('Snapshot carregado:', SNAPSHOT.timestamp);
+    return SNAPSHOT;
+  }catch(e){ console.error('Erro carregando snapshot:', e); return null; }
+}
+
 /* ================= GLOBAL ERROR HANDLER ================= */
 window.addEventListener('error', e => {
   const el = document.getElementById('errorBanner');
@@ -442,7 +456,42 @@ function dueHtml(iso, statusKey){
   return `<span class="due ok">${fmtBR(iso)}</span>`;
 }
 async function callTool(name, args){
-  if(!window.cowork || !window.cowork.callMcpTool) throw new Error('window.cowork.callMcpTool não disponível');
+  if(!window.cowork || !window.cowork.callMcpTool){
+    // Modo estático: retornar dados do SNAPSHOT
+    if(!SNAPSHOT) await loadSnapshot();
+    if(!SNAPSHOT) throw new Error('Snapshot não carregado');
+    // Retornar texto simulado conforme query
+    const q = (args && args.query) || '';
+    if(name.endsWith('search_tickets')){
+      const items = SNAPSHOT.zd_tickets || [];
+      const lines = items.map(t => `[#${t.id}] ${t.subject} | status=${t.status} priority=${t.priority} | https://telluria.zendesk.com/api/v2/tickets/${t.id}.json`);
+      return `Total: ${SNAPSHOT.kpis.zd_tickets_count} tickets\n\n` + lines.join('\n');
+    }
+    if(q.includes('FROM Task')){
+      const items = SNAPSHOT.sf_tasks || [];
+      const lines = items.map(t => JSON.stringify({Id:t.id, Subject:t.subject, Status:t.status, Priority:t.priority, ActivityDate:t.due, Owner:{Name:'Leticia Torres'}, Who:t.who?{Name:t.who}:null, What:t.what?{Name:t.what}:null}));
+      return `Total: ${items.length} registro(s) | done=True\n\n` + lines.join('\n');
+    }
+    if(q.includes('IsWon = true')){
+      if(q.includes('COUNT')){
+        return `Total: 1 registro(s) | done=True\n\n${JSON.stringify({total: SNAPSHOT.kpis.sales_all_time_count, totalAmount: SNAPSHOT.kpis.sales_all_time_amount})}`;
+      }
+      const items = SNAPSHOT.sf_sales || [];
+      const lines = items.map(s => JSON.stringify({Id:s.id, Name:s.name, Amount:s.amount, CloseDate:s.closeDate, Account:{Name:s.account, AddressState__c:s.uf}}));
+      return `Total: ${items.length} registro(s) | done=True\n\n` + lines.join('\n');
+    }
+    if(q.includes('IsClosed = false') && q.includes('StageName')){
+      const items = SNAPSHOT.sf_pipeline || [];
+      const lines = items.map(p => JSON.stringify({Id:p.id, Name:p.name, Amount:p.amount, CloseDate:p.closeDate, StageName:p.stage, Account:{Name:p.account, AddressState__c:p.uf}}));
+      return `Total: ${items.length} registro(s) | done=True\n\n` + lines.join('\n');
+    }
+    if(q.includes('FROM Account')){
+      const items = SNAPSHOT.sf_accounts || [];
+      const lines = items.map(a => JSON.stringify({Id:a.id, Name:a.name, AddressState__c:a.uf, AddressCity__c:a.city, Industry:a.industry, Phone:a.phone, Website:'', NumberOfTrucks__c:a.trucks, VolumeMedioMensalM3__c:a.volume, Owner:{Name:a.owner||''}}));
+      return `Total: ${items.length} registro(s) | done=True\n\n` + lines.join('\n');
+    }
+    return 'Total: 0 registro(s) | done=True\n\n';
+  }
   const result = await window.cowork.callMcpTool(name, args);
   return (typeof result === 'string') ? result : (result?.result || result?.content?.[0]?.text || JSON.stringify(result));
 }
